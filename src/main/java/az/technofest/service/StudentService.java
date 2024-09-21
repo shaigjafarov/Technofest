@@ -1,38 +1,51 @@
 package az.technofest.service;
 
-import az.technofest.exception.StudentAlreadyExistException;
+import az.technofest.dao.entity.Student;
+import az.technofest.dao.repository.StudentRepository;
 import az.technofest.exception.StudentNotFountException;
 import az.technofest.model.request.StudentRequest;
-import java.util.HashMap;
-import java.util.Map;
+import az.technofest.model.response.StudentResponse;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
+@Service
+@RequiredArgsConstructor
 public class StudentService {
 
-    private  final TeacherService teacherService;
+    private final StudentRepository studentRepository;
+    private Optional<Student> byId;
 
-    public StudentService( TeacherService teacherService) {
-        this.teacherService = teacherService;
+
+    public void addStudent(StudentRequest request) {
+
+        Student student = Student.builder()
+                .fullName(request.getName())
+                .groupId(request.getGroup())
+                .scholarShip(request.getSalary())
+                .build();
+
+        studentRepository.save(student);
     }
 
-    static Map<Long, StudentRequest> studentMap= new HashMap<>(Map.of(12L, new StudentRequest(12L, "Hafiz"), 13L , new StudentRequest(13L, "Elmir") ));
+    public StudentResponse getStudent(Long studentId) {
+
+        var studentOptional = studentRepository.findById(studentId);
+        if (studentOptional.isPresent()) {
+
+            var student = studentOptional.get();
+            return StudentResponse.builder()
+                    .name(student.getFullName())
+                    .groupNumber(student.getGroupId())
+                    .scholarship(student.getScholarShip())
+                    .build();
+        } else throw new StudentNotFountException(String.format("user id: %s", studentId));
 
 
-    public StudentRequest getById(Long id){
-        teacherService.result();
-        return studentMap.get(id);
     }
 
-    public void addStudent(StudentRequest student){
-        if(studentMap.containsKey(student.getId()))
-            throw new StudentAlreadyExistException(student.getId() +" whit this id student exist");
-        studentMap.put(student.getId(), student);
-    }
+    public String getStudentName(Long studentId) {
 
-
-    public void updateStudent(StudentRequest student) {
-        if(!studentMap.containsKey(student.getId()))
-            throw new StudentNotFountException(student.getId() +"with id student not found");
-        studentMap.put(student.getId(), student);
-
+        return studentRepository.adininiTap(studentId);
     }
 }

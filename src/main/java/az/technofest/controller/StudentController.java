@@ -2,12 +2,18 @@ package az.technofest.controller;
 
 import az.technofest.configuration.DBConfig;
 import az.technofest.configuration.KafkaConfig;
+import az.technofest.dao.entity.Student;
+import az.technofest.dao.repository.StudentRepository;
 import az.technofest.model.Employer;
 import az.technofest.model.request.StudentRequest;
 import az.technofest.model.StudentCreateResponse;
+import az.technofest.model.response.StudentResponse;
 import az.technofest.service.StudentService;
 import az.technofest.service.TeacherService;
 import jakarta.validation.Valid;
+import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
@@ -25,73 +31,41 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/student")
-@Lazy
 public class StudentController {
 
+    private final StudentRepository studentRepository;
 
-    @Autowired
-    private ApplicationContext applicationContext;
+    private final StudentService studentService;
 
-    @Autowired
-    private DBConfig dbConfig;
-
-    @Autowired
-    private KafkaConfig kafkaConfig;
-
-
-    @Autowired
-    private Environment environment;
+    @PostMapping
+    public ResponseEntity<StudentCreateResponse> addStudent(@RequestBody @Valid StudentRequest request) {
+        studentService.addStudent(request);
+        return new ResponseEntity<>(new StudentCreateResponse("success"), HttpStatus.CREATED);
+    }
 
 
     @GetMapping
-    public StudentRequest getUserByIdWithRequestParam(@RequestParam Long id) {
-        StudentService studentService = new StudentService((TeacherService) applicationContext.getBean("a1Group"));
-        dbConfig.getConnection();
-        System.out.println(kafkaConfig.getName());
-        System.out.println(kafkaConfig.getHost());
-        System.out.println(kafkaConfig.getPort());
+    public StudentResponse getStudent(@RequestParam("id") Long studentId) {
 
-        System.out.println("get property from environment by name: "+environment.getProperty("check.flag"));
+        return  studentService.getStudent(studentId);
+    }   
+    
+    
+    @GetMapping("/ad")
+    public String getStudentName(@RequestParam("id") Long studentId) {
 
-        return studentService.getById(id);
-
-    }
-
-    @GetMapping("/{userId}")
-    public StudentRequest getUserByIdWithPathVariable(@PathVariable("userId") Long id) {
-        StudentService studentService = new StudentService((TeacherService) applicationContext.getBean("a1Group"));
-
-        return studentService.getById(id);
+        return  studentService.getStudentName(studentId);
     }
 
 
+    @GetMapping("/group")
+    public List<Student> sdf(@RequestParam Long groupId) {
 
-    @PutMapping
-    public ResponseEntity<StudentCreateResponse> updateStudent(@RequestBody StudentRequest request) {
-        StudentService studentService = (StudentService) applicationContext.getBean("getStudentService");
-        studentService.updateStudent(request);
-        return new ResponseEntity<>(new StudentCreateResponse("success"), HttpStatus.OK);
+        return  studentRepository.findStudentByGroupId(groupId);
     }
-
-
-
-    @PostMapping("/employer")
-    public ResponseEntity validEmployer(@Valid  @RequestBody Employer employer) {
-
-
-
-        System.out.println(employer);
-
-        return new ResponseEntity<>( HttpStatus.OK);
-    }
-
-
-    @PostMapping
-    public ResponseEntity<StudentCreateResponse> addStudent(@RequestBody @Valid StudentRequest student) {
-        StudentService studentService = (StudentService) applicationContext.getBean("getStudentService");
-        studentService.addStudent(student);
-        return new ResponseEntity<>(new StudentCreateResponse("success"), HttpStatus.CREATED);
-    }
+    
+    
 
 }
