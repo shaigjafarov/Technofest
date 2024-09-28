@@ -3,8 +3,10 @@ package az.technofest.controller;
 import az.technofest.configuration.DBConfig;
 import az.technofest.configuration.KafkaConfig;
 import az.technofest.dao.entity.Student;
+import az.technofest.dao.repository.StudentDynamicQuery;
 import az.technofest.dao.repository.StudentRepository;
 import az.technofest.model.Employer;
+import az.technofest.model.projection.StudentProjection;
 import az.technofest.model.request.StudentRequest;
 import az.technofest.model.StudentCreateResponse;
 import az.technofest.model.response.StudentResponse;
@@ -65,7 +67,32 @@ public class StudentController {
 
         return  studentRepository.findStudentByGroupId(groupId);
     }
-    
-    
+
+
+    @GetMapping("/porojection")
+    public StudentResponse getStudentWithProjection(@RequestParam("id") Long studentId) {
+
+        return  studentService.getStudentWithProjection(studentId);
+    }
+
+
+
+    @GetMapping("/porojectionsql")
+    public StudentProjection getStudentWithProjectionSQL(@RequestParam("id") Long studentId) {
+
+        return  studentService.getStudentWithProjectionSql(studentId);
+    }
+
+
+    @PostMapping("/filter")
+    public List<Student> getStudent(@RequestBody StudentRequest studentRequest) {
+
+        return  studentService.filterStudents(studentRequest);
+    }
+
+
+
+
+
 
 }

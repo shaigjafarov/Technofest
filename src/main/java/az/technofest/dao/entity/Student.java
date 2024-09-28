@@ -1,5 +1,6 @@
 package az.technofest.dao.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,6 +19,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Student {
 
 
