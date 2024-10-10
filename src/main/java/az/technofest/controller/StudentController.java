@@ -6,6 +6,8 @@ import az.technofest.dao.entity.Student;
 import az.technofest.dao.repository.StudentDynamicQuery;
 import az.technofest.dao.repository.StudentRepository;
 import az.technofest.model.Employer;
+import az.technofest.model.dto.FakeStudentDTO;
+import az.technofest.model.dto.ProductDto;
 import az.technofest.model.projection.StudentProjection;
 import az.technofest.model.request.StudentRequest;
 import az.technofest.model.StudentCreateResponse;
@@ -20,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
@@ -51,47 +54,82 @@ public class StudentController {
     @GetMapping
     public StudentResponse getStudent(@RequestParam("id") Long studentId) {
 
-        return  studentService.getStudent(studentId);
-    }   
-    
-    
+
+        return studentService.getStudent(studentId);
+    }
+
+
     @GetMapping("/ad")
     public String getStudentName(@RequestParam("id") Long studentId) {
 
-        return  studentService.getStudentName(studentId);
+        return studentService.getStudentName(studentId);
     }
 
 
     @GetMapping("/group")
     public List<Student> sdf(@RequestParam Long groupId) {
 
-        return  studentRepository.findStudentByGroupId(groupId);
+        return studentRepository.findStudentByGroupId(groupId);
     }
 
 
     @GetMapping("/porojection")
     public StudentResponse getStudentWithProjection(@RequestParam("id") Long studentId) {
 
-        return  studentService.getStudentWithProjection(studentId);
+        return studentService.getStudentWithProjection(studentId);
     }
-
 
 
     @GetMapping("/porojectionsql")
     public StudentProjection getStudentWithProjectionSQL(@RequestParam("id") Long studentId) {
 
-        return  studentService.getStudentWithProjectionSql(studentId);
+        return studentService.getStudentWithProjectionSql(studentId);
     }
 
 
     @PostMapping("/filter")
     public List<Student> getStudent(@RequestBody StudentRequest studentRequest) {
 
-        return  studentService.filterStudents(studentRequest);
+        return studentService.filterStudents(studentRequest);
+    }
+
+
+    @GetMapping("/page")
+    public Page<Student> getStudent(
+            @RequestParam Integer pageNumber,
+            @RequestParam Integer pageSize,
+            @RequestParam Integer group
+    ) {
+
+        return studentService.getStudent(pageNumber, pageSize, group);
+    }
+
+
+    @GetMapping("/fake")
+    public List<FakeStudentDTO> getFakeStudent(
+    ) {
+
+        return studentService.getFakeStudent();
+    }
+
+    @GetMapping("/fake/product")
+    public ProductDto getFakeProduct(
+    ) {
+
+        return studentService.getFakeProduct();
     }
 
 
 
+
+
+
+    @PostMapping("/fake")
+    public ProductDto addPost(@RequestBody ProductDto productDto
+    ) {
+
+        return studentService.addPost(productDto);
+    }
 
 
 
